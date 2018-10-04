@@ -5,7 +5,12 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,18 +22,52 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button stopPlayBtn,playRecordBtn,stopRecordBtn,recordBtn;
+   /* Button stopPlayBtn,playRecordBtn,stopRecordBtn,recordBtn;
     public static final int PERMISSION_REQUEST_CODE = 1;
     MediaRecorder recorder;
     MediaPlayer mediaPlayer;
-    String pathSave = "";
+    String pathSave = "";*/
+   ViewPager viewPager;
+   TabLayout tabLayout;
+   TabPagerAdapter tabPagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recordBtn = findViewById(R.id.recordBtn);
+        requestForPermission();
+
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Recorder"));
+        tabLayout.addTab(tabLayout.newTab().setText("Saved Records"));
+
+        tabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
+
+        viewPager.setAdapter(tabPagerAdapter);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+      /*  recordBtn = findViewById(R.id.recordBtn);
         stopPlayBtn = findViewById(R.id.stopPlayBtn);
         stopRecordBtn = findViewById(R.id.stopRecordBtn);
         playRecordBtn = findViewById(R.id.playRecordBtn);
@@ -37,16 +76,35 @@ public class MainActivity extends AppCompatActivity {
 
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
                 +"/"+UUID.randomUUID().toString()+"audio_record_3gp";
-        prepareMediaRecorder();
+        prepareMediaRecorder();*/
 
     }
-    void prepareMediaRecorder(){
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        recorder.setOutputFile(pathSave);
+    public class TabPagerAdapter extends FragmentPagerAdapter{
+
+        int tabCount;
+        public TabPagerAdapter(FragmentManager fm,int tabCount) {
+            super(fm);
+            this.tabCount = tabCount;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case 0:
+                    return new RecorderFragment();
+
+                case 1:
+                    return new SavedRecordFragment();
+            }
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return tabCount;
+        }
     }
+
 
     void requestForPermission(){
         if (ActivityCompat.checkSelfPermission(
@@ -55,30 +113,10 @@ public class MainActivity extends AppCompatActivity {
                 PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,new String[]{
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO
-            },PERMISSION_REQUEST_CODE);
+            },1);
         }
     }
-
-    public void startRecording(View view) {
-        try {
-            recorder.prepare();
-            recorder.start();
-            playRecordBtn.setEnabled(false);
-            stopPlayBtn.setEnabled(false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        recordBtn.setEnabled(false);
-        stopRecordBtn.setEnabled(true);
-        Toast.makeText(this, "Start Recording.........", Toast.LENGTH_SHORT).show();
-    }
-
-    public void stopRecording(View view) {
-        recorder.stop();
-        playRecordBtn.setEnabled(true);
-        stopRecordBtn.setEnabled(false);
-
-    }
+/*
 
     public void playRecord(View view) {
         recordBtn.setEnabled(false);
@@ -102,5 +140,5 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.release();
         stopPlayBtn.setEnabled(false);
         prepareMediaRecorder();
-    }
+    }*/
 }
