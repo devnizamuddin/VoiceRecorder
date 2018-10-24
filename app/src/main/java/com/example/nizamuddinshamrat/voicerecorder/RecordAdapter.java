@@ -15,10 +15,13 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
 
     private Context context;
     private ArrayList<RecordPOJO> recordPOJOS;
+    private ClickListener clickListener;
 
-    public RecordAdapter(Context context, ArrayList<RecordPOJO> recordPOJOS) {
+
+    public RecordAdapter(Context context, ArrayList<RecordPOJO> recordPOJOS, ClickListener clickListener) {
         this.context = context;
         this.recordPOJOS = recordPOJOS;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -59,7 +62,20 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
             recordingDurationTv = itemView.findViewById(R.id.recordingDurationTv);
             recordingSizeTv = itemView.findViewById(R.id.recordingSizeTv);
             recordingOptionTv = itemView.findViewById(R.id.recordingOptionTv);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onClickRecordItem(getAdapterPosition());
+                }
+            });
 
         }
+    }
+    void updateRecordList(ArrayList<RecordPOJO>recordPOJOS){
+        this.recordPOJOS = recordPOJOS;
+        notifyDataSetChanged();
+    }
+    interface ClickListener{
+        void onClickRecordItem(int position);
     }
 }

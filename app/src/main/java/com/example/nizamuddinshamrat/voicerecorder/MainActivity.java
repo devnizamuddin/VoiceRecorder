@@ -1,16 +1,20 @@
 package com.example.nizamuddinshamrat.voicerecorder;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,14 +26,11 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-   /* Button stopPlayBtn,playRecordBtn,stopRecordBtn,recordBtn;
+
     public static final int PERMISSION_REQUEST_CODE = 1;
-    MediaRecorder recorder;
-    MediaPlayer mediaPlayer;
-    String pathSave = "";*/
-   ViewPager viewPager;
-   TabLayout tabLayout;
-   TabPagerAdapter tabPagerAdapter;
+    ViewPager viewPager;
+    TabLayout tabLayout;
+    TabPagerAdapter tabPagerAdapter;
 
 
     @Override
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("Recorder"));
         tabLayout.addTab(tabLayout.newTab().setText("Saved Records"));
 
-        tabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
+        tabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(tabPagerAdapter);
 
@@ -67,29 +68,20 @@ public class MainActivity extends AppCompatActivity {
         });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-      /*  recordBtn = findViewById(R.id.recordBtn);
-        stopPlayBtn = findViewById(R.id.stopPlayBtn);
-        stopRecordBtn = findViewById(R.id.stopRecordBtn);
-        playRecordBtn = findViewById(R.id.playRecordBtn);
-
-        requestForPermission();
-
-        pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                +"/"+UUID.randomUUID().toString()+"audio_record_3gp";
-        prepareMediaRecorder();*/
-
     }
-    public class TabPagerAdapter extends FragmentPagerAdapter{
+
+    public class TabPagerAdapter extends FragmentPagerAdapter {
 
         int tabCount;
-        public TabPagerAdapter(FragmentManager fm,int tabCount) {
+
+        public TabPagerAdapter(FragmentManager fm, int tabCount) {
             super(fm);
             this.tabCount = tabCount;
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
                     return new RecorderFragment();
 
@@ -106,39 +98,54 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    void requestForPermission(){
+    void requestForPermission() {
         if (ActivityCompat.checkSelfPermission(
-                this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
-                && ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO) ==
-                PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions(this,new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO
-            },1);
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO
+            }, PERMISSION_REQUEST_CODE);
         }
     }
-/*
 
-    public void playRecord(View view) {
-        recordBtn.setEnabled(false);
-        stopPlayBtn.setEnabled(true);
-        stopRecordBtn.setEnabled(false);
-        mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(pathSave);
-            mediaPlayer.prepare();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                this.finish();
+                startActivity(new Intent(this, this.getClass()));
+            } else {
+
+                // Permission Denied
+                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                        .setTitle("Give Permission")
+                        .setMessage("You have to give those permission to use Voice Recorder")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestForPermission();
+                            }
+                        });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+                builder.create().show();
+            }
         }
-        catch (Exception e){}
-
-        mediaPlayer.start();
-        playRecordBtn.setEnabled(false);
     }
 
-    public void stopPlay(View view) {
-       recordBtn.setEnabled(true);
-
-        mediaPlayer.stop();
-        mediaPlayer.release();
-        stopPlayBtn.setEnabled(false);
-        prepareMediaRecorder();
-    }*/
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (tabPagerAdapter!=null)
+        {
+            tabPagerAdapter.notifyDataSetChanged();
+        }
+    }
 }
