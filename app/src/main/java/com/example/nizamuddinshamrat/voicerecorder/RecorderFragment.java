@@ -99,6 +99,7 @@ public class RecorderFragment extends Fragment {
 
     private void prepareMediaRecorder() {
 
+        //test
         //prepare recorder for record new file
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);

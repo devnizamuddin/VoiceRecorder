@@ -61,6 +61,7 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
             @Override
             public void onClick(View v) {
                 if (!playing) {
+                    //not paling
                     if (String.valueOf(recordListPosition).isEmpty()) {
                         Toast.makeText(getActivity(), "Nothing to Play", Toast.LENGTH_SHORT).show();
                     } else {
