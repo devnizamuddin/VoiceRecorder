@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="80dp"
     android:background="@drawable/single_layout_backround"
     android:orientation="horizontal"
     android:weightSum="4"
@@ -13,12 +13,11 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="15dp"
         android:layout_weight="2"
-        android:text="2018 Oct 05 22:26:29_audio_record_3gp"
+        android:text="13:54:26_2018 Oct 15_voice_recorder_3gp"
         android:textColor="@color/textColorDeep"
         android:textSize="15dp"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
-
+        android:gravity="center"
         />
 
     <LinearLayout

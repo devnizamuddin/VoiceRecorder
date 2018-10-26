@@ -5,6 +5,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,9 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     ArrayList<RecordPOJO> recordList;
     int recordListPosition;
     RecordAdapter recordAdapter;
+    SeekBar seekBar;
+    Runnable runnable;
+    Handler handler;
 
     public SavedRecordFragment() {
         // Required empty public constructor
@@ -37,7 +42,7 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_saved_record, container, false);
@@ -47,13 +52,15 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
         playRecordBtn = view.findViewById(R.id.playRecordBtn);
         playNextBtn = view.findViewById(R.id.playNextBtn);
         playingRecordNameTv = view.findViewById(R.id.playingRecordNameTv);
+        seekBar = view.findViewById(R.id.seekBar);
+        handler = new Handler();
 
         //getting all recording information
         recordList = getAllRecordInformation();
 
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
-         recordAdapter = new RecordAdapter(getActivity(), recordList, this);
+        recordAdapter = new RecordAdapter(getActivity(), recordList, this);
         recyclerView.setAdapter(recordAdapter);
 
 
@@ -74,6 +81,57 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
                 }
             }
         });
+        playNextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition+1 < recordList.size()) {
+                    if (playing) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                    }
+
+                    recordListPosition = recordListPosition + 1;
+                    RecordPOJO recordPOJO = recordList.get(recordListPosition);
+                    playRecord(recordPOJO);
+                }
+            }
+        });
+        playPreviousBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition>0) {
+                    if (playing) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                    }
+
+                    recordListPosition = recordListPosition - 1;
+                    RecordPOJO recordPOJO = recordList.get(recordListPosition);
+                    playRecord(recordPOJO);
+                }
+            }
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    if (playing) {
+                        mediaPlayer.seekTo(progress);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         return view;
     }
 
@@ -82,12 +140,13 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Toast.makeText(getActivity(), "Reloaded", Toast.LENGTH_SHORT).show();
-            ArrayList<RecordPOJO>recordPOJOS = new ArrayList<>();
+            ArrayList<RecordPOJO> recordPOJOS = new ArrayList<>();
             recordPOJOS = getAllRecordInformation();
             recordAdapter.updateRecordList(recordPOJOS);
         }
     }
-    private ArrayList<RecordPOJO> getAllRecordInformation(){
+
+    private ArrayList<RecordPOJO> getAllRecordInformation() {
         ArrayList<File> files = new ArrayList<>();
         files = getAllRecordedFile();
 
@@ -168,9 +227,14 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     @Override
     public void onClickRecordItem(int position) {
 
+        if (playing) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
         recordListPosition = position;
         RecordPOJO recordPOJO = recordList.get(position);
         playRecord(recordPOJO);
+
 
     }
 
@@ -184,10 +248,13 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    seekBar.setMax(mediaPlayer.getDuration());
                     mediaPlayer.start();
+                    changeSeekBar();
                 }
             });
         } catch (Exception e) {
+
         }
         //Change Layout
 
@@ -196,14 +263,32 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
         playRecordBtn.setBackgroundResource(R.drawable.stop_music_button);
         //After complete Record Play
 
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
 
                 stopPlaySong();
+                seekBar.setProgress(0);
                 Toast.makeText(getActivity(), "Finished", Toast.LENGTH_SHORT).show();
             }
         });
+
+    }
+
+    private void changeSeekBar() {
+
+
+        if (playing) {
+            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    changeSeekBar();
+                }
+            };
+            handler.postDelayed(runnable, 1000);
+        }
 
     }
 
