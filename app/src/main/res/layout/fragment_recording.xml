@@ -3,34 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecorderFragment"
-    android:orientation="vertical"
     android:gravity="center"
-    >
+    android:orientation="vertical"
+    tools:context=".RecorderFragment">
 
     <Chronometer
         android:id="@+id/recordingTimeMeter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/recording_time_duration"
+        android:background="@drawable/circle_red_stock"
         android:gravity="center"
-        android:textSize="70dp"
         android:textColor="@color/textColorDeep"
-        />
+        android:textSize="56dp" />
+
     <TextView
         android:id="@+id/recordUserHint"
-        android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/start_recording_text"
-        />
+        android:layout_marginTop="56sp"
+        android:text="Press the button to start record"
+        android:textColor="@color/textColorDeep"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <Button
         android:id="@+id/recordBtn"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
-        android:background="@drawable/start_recording"
-        />
+        android:background="@drawable/start_recording" />
 
 </LinearLayout>

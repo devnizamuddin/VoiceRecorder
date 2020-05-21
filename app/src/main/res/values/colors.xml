@@ -2,8 +2,11 @@
 <resources>
     <color name="colorPrimary">#e74c3c</color>
     <color name="colorPrimaryDark">#c0392b</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FFFFFF</color>
     <color name="textColorDeep">#2c3e50</color>
     <color name="textColorLight">#34495e</color>
     <color name="textColorClouds">#ecf0f1</color>
+    <color name="gray">#E8E8E8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

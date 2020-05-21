@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ public class RecorderFragment extends Fragment {
     private boolean recording = false;
     private File f;
 
+
     public RecorderFragment() {
     }
 
@@ -45,17 +47,17 @@ public class RecorderFragment extends Fragment {
         recordingTimeMeter = view.findViewById(R.id.recordingTimeMeter);
         recordUserHint = view.findViewById(R.id.recordUserHint);
 
+
         context = getActivity();
 
 
         //Create Folder
-        String folder_main = "Voice Recorder";
+        String folder_main = "Sound Recorder";
         f = new File(Environment.getExternalStorageDirectory(), folder_main);
         if (!f.exists()) {
             //folder doesn't exist
             f.mkdirs();
         } else {
-            Toast.makeText(context, "Ok" + f.getAbsolutePath(), Toast.LENGTH_SHORT).show();
         }
         //On Click Record button
         recordButton.setOnClickListener(new View.OnClickListener() {
@@ -72,12 +74,11 @@ public class RecorderFragment extends Fragment {
                         recordingTimeMeter.start();
                         recording = true;
                         recordButton.setBackgroundResource(R.drawable.stop_recording);
-                        recordUserHint.setBackgroundResource(R.drawable.stop_recording_text);
+                        recordUserHint.setText("Press the button to stop record");
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(context, "Start Recording.........", Toast.LENGTH_SHORT).show();
                 } else {
                     // if recording is already running
                     //record audio by
@@ -87,8 +88,7 @@ public class RecorderFragment extends Fragment {
 
                     recording = false;
                     recordButton.setBackgroundResource(R.drawable.start_recording);
-                    recordUserHint.setBackgroundResource(R.drawable.start_recording_text);
-                    Toast.makeText(context, "Recording Finish", Toast.LENGTH_SHORT).show();
+                    recordUserHint.setText("Press the button to stop record");
                 }
             }
         });
@@ -116,7 +116,7 @@ public class RecorderFragment extends Fragment {
         String currentTime = sdf.format(date);
 
         String savePath = f.getAbsolutePath()
-                + "/" + currentTime + "voice_recorder_3gp";
+                + "/" + currentTime + "_voice_recorder_3gp";
         return savePath;
     }
 

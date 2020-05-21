@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
+    private LinearLayout player_layout;
 
     public SavedRecordFragment() {
         // Required empty public constructor
@@ -53,6 +55,9 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
         playNextBtn = view.findViewById(R.id.playNextBtn);
         playingRecordNameTv = view.findViewById(R.id.playingRecordNameTv);
         seekBar = view.findViewById(R.id.seekBar);
+
+        player_layout = view.findViewById(R.id.player_layout);
+
         handler = new Handler();
 
         //getting all recording information
@@ -139,7 +144,6 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-            Toast.makeText(getActivity(), "Reloaded", Toast.LENGTH_SHORT).show();
             ArrayList<RecordPOJO> recordPOJOS = new ArrayList<>();
             recordPOJOS = getAllRecordInformation();
             recordAdapter.updateRecordList(recordPOJOS);
@@ -177,7 +181,7 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     }
 
     private ArrayList<File> getAllRecordedFile() {
-        String folder_main = "Voice Recorder";
+        String folder_main = "Sound Recorder";
         File rootFile = new File(Environment.getExternalStorageDirectory(), folder_main);
         ArrayList<File> files = new ArrayList<>();
 
@@ -231,6 +235,7 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
             mediaPlayer.stop();
             mediaPlayer.release();
         }
+        player_layout.setVisibility(LinearLayout.VISIBLE);
         recordListPosition = position;
         RecordPOJO recordPOJO = recordList.get(position);
         playRecord(recordPOJO);
@@ -270,7 +275,6 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
 
                 stopPlaySong();
                 seekBar.setProgress(0);
-                Toast.makeText(getActivity(), "Finished", Toast.LENGTH_SHORT).show();
             }
         });
 

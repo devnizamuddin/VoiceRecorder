@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setText("Recorder"));
         tabLayout.addTab(tabLayout.newTab().setText("Saved Records"));
+        tabLayout.getTabAt(0).setIcon(R.drawable.microphone_white);
+        tabLayout.getTabAt(1).setIcon(R.drawable.start_play_song_button);
 
         tabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
