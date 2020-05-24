@@ -25,18 +25,23 @@ import java.util.ArrayList;
 public class SavedRecordFragment extends Fragment implements RecordAdapter.ClickListener {
 
 
-    RecyclerView recyclerView;
-    Button playPreviousBtn, playRecordBtn, playNextBtn;
-    TextView playingRecordNameTv;
-    MediaPlayer mediaPlayer;
-    boolean playing = false;
-    ArrayList<RecordPOJO> recordList;
-    int recordListPosition;
-    RecordAdapter recordAdapter;
-    SeekBar seekBar;
-    Runnable runnable;
-    Handler handler;
+    //View Item
+    private RecyclerView recyclerView;
+    private Button playPreviousBtn, playRecordBtn, playNextBtn;
+    private TextView playingRecordNameTv;
+    private SeekBar seekBar;
     private LinearLayout player_layout;
+
+    //Data item
+    private boolean playing = false;
+    private ArrayList<RecordPOJO> recordList;
+    private int recordListPosition;
+
+    //Other Object
+    private MediaPlayer mediaPlayer;
+    private RecordAdapter recordAdapter;
+    private Runnable runnable;
+    private Handler handler;
 
     public SavedRecordFragment() {
         // Required empty public constructor
@@ -48,27 +53,30 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_saved_record, container, false);
-        //Layout Id
+
+        //View Item
         recyclerView = view.findViewById(R.id.recordListRv);
         playPreviousBtn = view.findViewById(R.id.playPreviousBtn);
         playRecordBtn = view.findViewById(R.id.playRecordBtn);
         playNextBtn = view.findViewById(R.id.playNextBtn);
         playingRecordNameTv = view.findViewById(R.id.playingRecordNameTv);
         seekBar = view.findViewById(R.id.seekBar);
-
         player_layout = view.findViewById(R.id.player_layout);
 
+        //Other Object
         handler = new Handler();
 
         //getting all recording information
         recordList = getAllRecordInformation();
 
+        //Creating ReyclerView
         RecyclerView.LayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
         recordAdapter = new RecordAdapter(getActivity(), recordList, this);
         recyclerView.setAdapter(recordAdapter);
 
 
+        //Recoding player button start...............
         playRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,10 +94,11 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
                 }
             }
         });
+
         playNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition+1 < recordList.size()) {
+                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition + 1 < recordList.size()) {
                     if (playing) {
                         mediaPlayer.stop();
                         mediaPlayer.release();
@@ -101,10 +110,11 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
                 }
             }
         });
+
         playPreviousBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition>0) {
+                if (!String.valueOf(recordListPosition).isEmpty() && recordListPosition > 0) {
                     if (playing) {
                         mediaPlayer.stop();
                         mediaPlayer.release();
@@ -114,6 +124,8 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
                     RecordPOJO recordPOJO = recordList.get(recordListPosition);
                     playRecord(recordPOJO);
                 }
+
+
             }
         });
 
@@ -137,6 +149,9 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
 
             }
         });
+
+        //..................... recoding button finished
+
         return view;
     }
 
@@ -151,6 +166,8 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     }
 
     private ArrayList<RecordPOJO> getAllRecordInformation() {
+
+
         ArrayList<File> files = new ArrayList<>();
         files = getAllRecordedFile();
 
@@ -181,6 +198,8 @@ public class SavedRecordFragment extends Fragment implements RecordAdapter.Click
     }
 
     private ArrayList<File> getAllRecordedFile() {
+
+        //Getting all recorded file from file manager
         String folder_main = "Sound Recorder";
         File rootFile = new File(Environment.getExternalStorageDirectory(), folder_main);
         ArrayList<File> files = new ArrayList<>();

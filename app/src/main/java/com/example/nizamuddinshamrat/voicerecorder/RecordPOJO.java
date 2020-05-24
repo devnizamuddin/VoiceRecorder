@@ -14,6 +14,10 @@ public class RecordPOJO {
         this.recordPath = recordPath;
     }
 
+    public void setRecordName(String recordName) {
+        this.recordName = recordName;
+    }
+
     public String getRecordPath() {
         return recordPath;
     }

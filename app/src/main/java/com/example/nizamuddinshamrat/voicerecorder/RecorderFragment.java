@@ -1,7 +1,6 @@
 package com.example.nizamuddinshamrat.voicerecorder;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -13,9 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,13 +22,18 @@ import java.util.Date;
 
 public class RecorderFragment extends Fragment {
 
-    private Context context;
-    private MediaRecorder recorder;
+    //view Item
     private Button recordButton;
     private TextView recordUserHint;
     private Chronometer recordingTimeMeter;
+
+    //Data
     private boolean recording = false;
-    private File f;
+    private File file;
+
+    //other Object
+    private Context context;
+    private MediaRecorder recorder;
 
 
     public RecorderFragment() {
@@ -53,12 +55,12 @@ public class RecorderFragment extends Fragment {
 
         //Create Folder
         String folder_main = "Sound Recorder";
-        f = new File(Environment.getExternalStorageDirectory(), folder_main);
-        if (!f.exists()) {
+        file = new File(Environment.getExternalStorageDirectory(), folder_main);
+        if (!file.exists()) {
             //folder doesn't exist
-            f.mkdirs();
-        } else {
+            file.mkdirs();
         }
+
         //On Click Record button
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +73,8 @@ public class RecorderFragment extends Fragment {
                         recorder.prepare();
                         recorder.start();
                         recordingTimeMeter.setBase(SystemClock.elapsedRealtime());
+
+                        //View changes
                         recordingTimeMeter.start();
                         recording = true;
                         recordButton.setBackgroundResource(R.drawable.stop_recording);
@@ -86,6 +90,8 @@ public class RecorderFragment extends Fragment {
                     recorder.release();
                     recordingTimeMeter.stop();
 
+                    //View changing
+                    recordingTimeMeter.setBase(SystemClock.elapsedRealtime());
                     recording = false;
                     recordButton.setBackgroundResource(R.drawable.start_recording);
                     recordUserHint.setText("Press the button to stop record");
@@ -109,13 +115,14 @@ public class RecorderFragment extends Fragment {
     }
 
     private String getRecordingPath() {
-//Get Current Time And date
+
+        //Get Current Time And date
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss_yyyy MMM dd");
         String currentTime = sdf.format(date);
 
-        String savePath = f.getAbsolutePath()
+        String savePath = file.getAbsolutePath()
                 + "/" + currentTime + "_voice_recorder_3gp";
         return savePath;
     }
